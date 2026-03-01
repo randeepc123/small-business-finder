@@ -15,22 +15,37 @@ GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 GEMINI_API_KEY = "AIzaSyDP_uh7oU3P0kak2TwQa6jdz55L7rAUUpk"
 
 def get_keywords_from_gemini(user_query: str) -> str:
-    prompt = f"""
-The user is searching for local small businesses or places to go. 
-Their natural language query is: '{user_query}'
-
-Task: Evaluate what type of business or place best satisfies their need. 
-For example:
-- If they say "I am sick", the best places are "urgent care", "doctor", "clinic", or "pharmacy".
-- If they say "I need to fix my car", the best place is "auto repair" or "mechanic".
-- If they say "I want a quiet place to read", the best place is "coffee shop" or "library".
-
-Output ONLY A SINGLE BEST, broad, optimal search keyword (under 4 words) to pass to the Google Places API 'keyword' parameter. Do not output quotes or extra text.
-"""
+    prompt = (
+        "You help people find local small businesses and interesting places to visit.\n\n"
+        f"The user said: '{user_query}'\n\n"
+        "Your job: Figure out what type of LOCAL PLACE or SMALL BUSINESS best satisfies their need or mood.\n"
+        "Think about the USER'S INTENT and EMOTION, not just the literal words.\n\n"
+        "Examples:\n"
+        '- "i am sick" -> "urgent care clinic"\n'
+        '- "im bored" -> "museum"\n'
+        '- "i want to have fun" -> "entertainment venue"\n'
+        '- "i need to eat" -> "local restaurant"\n'
+        '- "im stressed" -> "spa"\n'
+        '- "my car is broken" -> "auto repair shop"\n'
+        '- "i want to learn something" -> "museum"\n'
+        '- "im hungry" -> "local restaurant"\n'
+        '- "i want coffee" -> "coffee shop"\n'
+        '- "i need a haircut" -> "hair salon"\n'
+        '- "i want to work out" -> "gym"\n'
+        '- "i need groceries" -> "grocery store"\n'
+        '- "i want to buy clothes" -> "clothing boutique"\n'
+        '- "i need a dentist" -> "dentist"\n'
+        '- "i want fresh air" -> "park"\n'
+        '- "i want to celebrate" -> "restaurant"\n\n'
+        "Rules:\n"
+        "1. Focus on the USER'S UNDERLYING NEED, not the literal words.\n"
+        "2. Output ONLY a single SHORT keyword phrase (2-4 words max).\n"
+        "3. No quotes, no explanation, no punctuation - just the keyword.\n"
+    )
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={GEMINI_API_KEY}"
     payload = {"contents": [{"parts": [{"text": prompt}]}]}
     try:
-        resp = requests.post(url, json=payload, timeout=5)
+        resp = requests.post(url, json=payload, timeout=10)
         if resp.status_code == 200:
             return resp.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
     except Exception as e:

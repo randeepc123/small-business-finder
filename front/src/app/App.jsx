@@ -15,6 +15,7 @@ export default function App() {
   const [detailsBusiness, setDetailsBusiness] = useState(null);
   const [detailsData, setDetailsData] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [radius, setRadius] = useState(5000); // metres
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [viewMode, setViewMode] = useState('split');
   const [userLat, setUserLat] = useState(null);
@@ -58,7 +59,7 @@ export default function App() {
     setDetailsBusiness(null);
 
     try {
-      const url = `${BACKEND}/search?query=${encodeURIComponent(searchQuery)}&lat=${userLat}&lng=${userLng}`;
+      const url = `${BACKEND}/search?query=${encodeURIComponent(searchQuery)}&lat=${userLat}&lng=${userLng}&radius=${radius}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error(`Server error: ${res.status}`);
       const data = await res.json();
@@ -199,6 +200,23 @@ export default function App() {
                 <span className="hidden sm:inline">List</span>
               </Button>
             </div>
+          </div>
+
+          {/* Radius Slider */}
+          <div className="mt-4 flex items-center gap-4">
+            <span className="text-blue-100 text-xs font-medium whitespace-nowrap">
+              📍 Radius: <span className="text-white font-bold">{radius >= 1000 ? `${(radius / 1000).toFixed(1)} km` : `${radius} m`}</span>
+            </span>
+            <input
+              type="range"
+              min="500"
+              max="25000"
+              step="500"
+              value={radius}
+              onChange={(e) => setRadius(Number(e.target.value))}
+              className="flex-1 h-1.5 rounded-full accent-yellow-300 cursor-pointer"
+            />
+            <span className="text-blue-200 text-xs whitespace-nowrap">500 m — 25 km</span>
           </div>
 
           {businesses.length > 0 && (

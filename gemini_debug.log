@@ -1,0 +1,248 @@
+
+
+--- GEMINI ERROR: HTTPSConnectionPool(host='generativelanguage.googleapis.com', port=443): Read timed out. (read timeout=10) ---
+Raw Res:
+{
+  "candidates": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "urgent care clinic",
+            "thoughtSignature": "ErgGCrUGAb4+9vuXh18MSCSzoN1EwijJ0dGrfLa2nuaHv+jNGiwoZd6Vwd2OPXxsc5iULn3oSPX5Y34rcWwjVCtvJwCebiHgaRYl7wo1HU7I/axOJImQZfSV6VAbz4F3jaHxrG8whxXk2YbDpt3W3ipPOsNYjfo4N9DRSTPdp5AQOKpIrkLgKx5RXB/wNfyz7KBzc47TPtpj7EeRYtWqzX+qZnTyXMK/bKHHcdP/J7Q601EkBY2swksB6KQqQ8oHEpa6AhxaNmsw6F9L5IF9BzcS9/7dciwhYZyg0jJWHBnVBtZ2CQ/SFft5HsLPYgUmGfDQT/lUvz6MzLHyTbIwwuau1L3pb1wZTtIc/vRuWVr8LAhP2Sz5sjkYQkO1/ntk7YJPwcDoJFUy4tSzrjRlqmMI4GY8ifk2DYyy4rCLKAYk4iQCnvZWiV3gbARapOIXhshBet3O8SlfgDcwSEST1xcG4ejFuhlEBBLX+FmUPp13/oJZB6YYa12o7Ycoh/7tn72EdDlZIsNAMX48K0ZfyK7PtOvMlayppYFUPOvO77EZSg3ci3XzDrU7lVnnT6ehFEcCxzMSUFjs/9iEvZzjXvslQT/wqQFV7ZSu/TWCvN0oZqbwgQYYQPtyzBgxI6luNQr3EDXdtfb40Ks46eMJmU+5ZwICHQJnAQ+QG/pqHiyZVVkGNmD7klBq2mo55s8b0jQPb+Z5ivg0AYSBuSPKvFBW6p6nURtuObLA+7tNXM8hPXo6CTomFtMguYXE4ZpRE9Dq+9LLLdo3wMT8/+zxtSQ6AEbILPaiDx6qRUv1cNlwMqSAmOxr9j3bsO2RYCILaqsBMSU8hQ4uNloEbS6Gr+48+0Nk/pK9PdsB2H4jc3y0M5Giia8cSUwkuN+iQuOBIlP5oNmoudGt6cr2+XbR4faabeTTVb3nvGWlDzhoQLaI+zEl+cj6lrbckCNLpanSqN8PmnOeDq6UxFsmozlNkFC/MZhBfJyxmK7hUOKte/xcrNHxrgJDUyRr5SB/G5xSdcAusyxZRwhSxeqIOERd1uuL8L4qI3m+KyFpuueepzatb4dhKYh5fFhc+vN954shQz2lPPa8b0JiN3Q="
+          }
+        ],
+        "role": "model"
+      },
+      "finishReason": "STOP",
+      "index": 0
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 376,
+    "candidatesTokenCount": 3,
+    "totalTokenCount": 581,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 376
+      }
+    ],
+    "thoughtsTokenCount": 202
+  },
+  "modelVersion": "gemini-3-flash-preview",
+  "responseId": "APGjaa3NH5yUjMcPs624uQk"
+}
+
+Cleaned Res:
+None
+
+
+--- GEMINI ERROR: HTTPSConnectionPool(host='generativelanguage.googleapis.com', port=443): Read timed out. (read timeout=10) ---
+Raw Res:
+{
+  "candidates": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "coffee shop",
+            "thoughtSignature": "EokKCoYKAb4+9vuGkcJzsogscRUqltotcWkl80BQOEMGa+1sXD33T12HxKib6RWGtf+u7PZPaJZ9i7OLlwONxfd3hfFE5ZM/K7tuNGQW+kMWJqzvq7kH3SmqNtGJlRqAsD6rCo8aALe3uaHHi7NKLNaIXcvVnEf9zWq97XL3+HhaPUNDEB6uys4YQS0Z7Jce1LiVeHHiVWlMxDRW7XTwUPvQc2zfDmjCLXmq7aUt/BsaR7wzH1IpkTw3VhHGxlnH0+j2ZDqumyHgjdAPTV03oRjaoqfVU0O3fvKA5jY8tHQIcwg310uXSvI+iDKy57KglfXFTH0SVWi7jSMMBCNK4lEuKH5QSXwI/6Z9ico+ttmqCM2Q8pAE+enhXT4CJGpStjzPAuYuaDccMKZvSKggnRoAIZo+P47cjnHUz1RnJRbdORIF1KVTo+UlYETgMa/OnXqDOC2aqCtdDmflyMajiytitdzJTRK8HwtNXkTr11AduJbe9M6ueqSJxeQYJPGkOd40XSI5OIcbBdyvUO4xNm329kkZe6QRLGeS+JW7b54qGLx9VGlf5wdJ4OSCmHiATT1ChuLmtCM8iY6f6TQvii7vmATNsBTKqLiBT8rOAlkiXChhBkMMtYqRa/PvMbkAF4A78r8EtRHfgmLGcGuqcGny+aCgJSkb2Q4UdR5nXCRWEu2snKKOLRft8j82EM1DVZrTffFdwd3yK5vZlHl00xoKDTWI0BWZAGxIkjPmG9kGIaFW06rsylm5/oWtj8jiBh4ZjON5Qru6BrkMiRlZSYl09yIP07h0VUShMxe9ds03QQjR8urHPxOMATU9Uf6abCBojlw5sZmbZ94eeUBnzAO77u2MwXR/IDoOPgOgI5WbX5ScInlSzGt4jxYFetLogssGLKBgEov2JS+2kQgFVR1Qgi1R/2U2imBNvzh+RIDvSHfcmLpqn61pIccikoRZYIdB5ZmbWftvpH8cu1UAuDWAnpDubM26WEJ6O/IHXrTq4NiKg+Ug5FaF79HNu+3FxZGOhhN3EwXD9TZhHS7C7SsZw2S3f7plz6NQOOm8HDI3Qa+NQrMBt72UB0AX+biLMZ1yXvCCKaIEH532ngr2sDaWK+8mFvzMhQ9LtqD8Pvc0+3+b+nqEKRVZ5ACUwXDWFlLifNJXTXR86sZQgwqu/mGF+nlaHKgOQsXjoVKYJpWsjSaWBhRaYXn8l8x8oggiK3+eA3oz6qamfMJEl67UPcAHjc4MH00XI7iA+GB3GUjspcf5mmSqyD2dOtF/Ln/NOqEFBF64lHihrFoTGKHgyuAcXHbO2Hmxedd2EVEmrcLmCpuUMU1wUWMMbsvN0tSmScuxCGfZT744AAmNAeMoRIszZxxtRcJyyd/bgdheLC3pe5jcPrGxs7+yLnEPsV2CH2iF7sQyIyLNbdcPOsL3nezJgkczNrImI+h56dMoZhqXcnmnF556g7+wkgHi2eZwbEEkbM2bFGzc40GvqebTd7Wamu76e5eWnaXzxByNiU29hxY9E/R6b0W/TwkhJSEsjKHdNGXU3jMFwpUReZzCheFcuIqffYxV0sJoe4gBmBR3+r7O2sN0u3ynDU5eraakcQfIKzmXcOW0pWUVNr1MD9BIhGdKIWQBSRzvvBIN8VstvAtcELJlId/uWMJaJ8+znyA4vhaxqhtaYFBFpqguatuYQz+2oEL1ycCzSJl53CWxTNXlm5yPjxF9OW4="
+          }
+        ],
+        "role": "model"
+      },
+      "finishReason": "STOP",
+      "index": 0
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 375,
+    "candidatesTokenCount": 2,
+    "totalTokenCount": 722,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 375
+      }
+    ],
+    "thoughtsTokenCount": 345
+  },
+  "modelVersion": "gemini-3-flash-preview",
+  "responseId": "N_GjaZXuAt-9-sAPnMLMsQI"
+}
+
+Cleaned Res:
+None
+
+
+--- GEMINI ERROR: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=AIzaSyDP_uh7oU3P0kak2TwQa6jdz55L7rAUUpk ---
+Raw Res:
+{
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3-flash\nPlease retry in 45.891654867s.",
+    "status": "RESOURCE_EXHAUSTED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.Help",
+        "links": [
+          {
+            "description": "Learn more about Gemini API quotas",
+            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.QuotaFailure",
+        "violations": [
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-3-flash"
+            },
+            "quotaValue": "20"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.RetryInfo",
+        "retryDelay": "45s"
+      }
+    ]
+  }
+}
+
+Cleaned Res:
+None
+
+
+--- GEMINI ERROR: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=AIzaSyDP_uh7oU3P0kak2TwQa6jdz55L7rAUUpk ---
+Raw Res:
+{
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3-flash\nPlease retry in 58.603022007s.",
+    "status": "RESOURCE_EXHAUSTED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.Help",
+        "links": [
+          {
+            "description": "Learn more about Gemini API quotas",
+            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.QuotaFailure",
+        "violations": [
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-3-flash"
+            },
+            "quotaValue": "20"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.RetryInfo",
+        "retryDelay": "58s"
+      }
+    ]
+  }
+}
+
+Cleaned Res:
+None
+
+
+--- GEMINI ERROR: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=AIzaSyDP_uh7oU3P0kak2TwQa6jdz55L7rAUUpk ---
+Raw Res:
+{
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3-flash\nPlease retry in 36.527842015s.",
+    "status": "RESOURCE_EXHAUSTED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.Help",
+        "links": [
+          {
+            "description": "Learn more about Gemini API quotas",
+            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.QuotaFailure",
+        "violations": [
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-3-flash"
+            },
+            "quotaValue": "20"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.RetryInfo",
+        "retryDelay": "36s"
+      }
+    ]
+  }
+}
+
+Cleaned Res:
+None
+
+
+--- GEMINI ERROR: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=AIzaSyDP_uh7oU3P0kak2TwQa6jdz55L7rAUUpk ---
+Raw Res:
+{
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3-flash\nPlease retry in 18.366476927s.",
+    "status": "RESOURCE_EXHAUSTED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.Help",
+        "links": [
+          {
+            "description": "Learn more about Gemini API quotas",
+            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.QuotaFailure",
+        "violations": [
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-3-flash"
+            },
+            "quotaValue": "20"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.RetryInfo",
+        "retryDelay": "18s"
+      }
+    ]
+  }
+}
+
+Cleaned Res:
+None
