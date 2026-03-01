@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Search, MapIcon, List, Sparkles } from 'lucide-react';
 import { Button } from './components/ui/button';
 
-const BACKEND = 'http://localhost:5001';
+const BACKEND = 'http://127.0.0.1:5001';
 
 export default function App() {
   const [businesses, setBusinesses] = useState([]);
