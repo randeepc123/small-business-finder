@@ -59,7 +59,7 @@ export default function App() {
     setDetailsBusiness(null);
 
     try {
-      const url = `${BACKEND}/search?query=${encodeURIComponent(searchQuery)}&lat=${userLat}&lng=${userLng}&radius=${radius}`;
+      const url = `${BACKEND}/search?query=${encodeURIComponent(searchQuery).toString()}&lat=${userLat}&lng=${userLng}&radius=${radius}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error(`Server error: ${res.status}`);
       const data = await res.json();
