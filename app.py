@@ -10,11 +10,11 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "AIzaSyBaFcA1aMshX-NaWsyT7T1CCpQqLiBWxZw")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 
 # The user provided a specific API key for Gemini
-GEMINI_API_KEY = "AIzaSyDP_uh7oU3P0kak2TwQa6jdz55L7rAUUpk"
+GEMINI_API_KEY = "AIzaSyAg6mts5EacPRbfXrh8Z0McdXqTDuZcH3I"
 
 
 # ── Chain blocklist ──────────────────────────────────────────────────────────
@@ -118,7 +118,8 @@ def search():
                 "parts": [{"text": prompt_keyword}]
             }]
         }
-        res = requests.post(url, json=payload, timeout=10)
+        # res = requests.post(url, json=payload, timeout=10)
+        res = requests.post(url, json=payload)
         res.raise_for_status()
         
         # Parse standard Gemini API JSON response
