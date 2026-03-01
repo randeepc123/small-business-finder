@@ -125,7 +125,7 @@ export default function App() {
             <div className="flex flex-col sm:flex-row gap-3 flex-1 w-full">
               {/* Search */}
               <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 cursor-pointer" onClick={handleSearch} disabled={loading || !searchQuery.trim()}/>
                 <Input
                   placeholder="Search businesses..."
                   value={searchQuery}
