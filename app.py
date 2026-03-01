@@ -2,6 +2,8 @@ from flask import Flask, request, jsonify, render_template_string
 from flask_cors import CORS
 import requests
 import os
+import json
+import re
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -10,6 +12,70 @@ app = Flask(__name__)
 CORS(app)
 
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+GEMINI_API_KEY = "AIzaSyDP_uh7oU3P0kak2TwQa6jdz55L7rAUUpk"
+
+def get_keywords_from_gemini(user_query: str) -> str:
+    prompt = f"""
+The user is searching for local small businesses or places to go. 
+Their natural language query is: '{user_query}'
+
+Task: Evaluate what type of business or place best satisfies their need. 
+For example:
+- If they say "I am sick", the best places are "urgent care", "doctor", "clinic", or "pharmacy".
+- If they say "I need to fix my car", the best place is "auto repair" or "mechanic".
+- If they say "I want a quiet place to read", the best place is "coffee shop" or "library".
+
+Output ONLY A SINGLE BEST, broad, optimal search keyword (under 4 words) to pass to the Google Places API 'keyword' parameter. Do not output quotes or extra text.
+"""
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={GEMINI_API_KEY}"
+    payload = {"contents": [{"parts": [{"text": prompt}]}]}
+    try:
+        resp = requests.post(url, json=payload, timeout=5)
+        if resp.status_code == 200:
+            return resp.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
+    except Exception as e:
+        print("Gemini Keyword error:", e, flush=True)
+    return user_query
+
+def filter_small_businesses_gemini(user_query: str, places: list) -> dict:
+    if not places: return {}
+    places_info = []
+    for p in places:
+        name = p.get('name', '')
+        place_id = p.get('id', '')
+        cat = p.get('category', '')
+        places_info.append(f"ID:{place_id} | Name:{name} | Category:{cat}")
+    
+    places_text = "\n".join(places_info)
+    prompt = f"""
+The user searched for: '{user_query}'
+Based on their need, here are the nearby places found:
+{places_text}
+
+Task:
+1. Thoroughly evaluate each place against the user's semantic intent. (e.g., if they are sick, they need medical attention, NOT a place with "sick" in the name).
+2. Filter out ANY big chain, state/nationwide companies, or large corporate franchises.
+3. Select ONLY the highly relevant, helpful local small businesses that genuinely solve the user's implicit problem based on their query.
+4. Provide a brief (1 sentence) specific AI reason for WHY this business is recommended based on their query and how it solves their problem.
+
+Return a JSON array of objects, where each object has "place_id" and "ai_reason". Output valid JSON only, no markdown blocks.
+"""
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={GEMINI_API_KEY}"
+    payload = {"contents": [{"parts": [{"text": prompt}]}]}
+    try:
+        resp = requests.post(url, json=payload, timeout=15)
+        if resp.status_code == 200:
+            text = resp.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
+            # robust json extraction
+            match = re.search(r'\[.*\]', text, re.DOTALL)
+            if match:
+                parsed = json.loads(match.group(0))
+                return {item.get("place_id"): item.get("ai_reason", "") for item in parsed if isinstance(item, dict)}
+            else:
+                return {}
+    except Exception as e:
+        print("Gemini error:", e, flush=True)
+    return None
 
 # ── Chain blocklist ──────────────────────────────────────────────────────────
 CHAIN_BLOCKLIST = [
@@ -73,9 +139,13 @@ def search():
         return jsonify({"error": "Google API key not configured on server"}), 500
 
     # ── Call Google Places Nearby Search ────────────────────────────────────
+    # Step 1: Use Gemini to convert natural language query to Places keyword
+    search_keyword = get_keywords_from_gemini(query)
+    print(f"Original Query: '{query}' -> Gemini Keyword: '{search_keyword}'", flush=True)
+    
     places_url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
     params = {
-        "keyword":  query,
+        "keyword":  search_keyword,
         "location": f"{lat},{lng}",
         "radius":   radius,
         "type":     "establishment",
@@ -99,8 +169,9 @@ def search():
     raw_results = data.get("results", [])
 
     # ── Filter + shape results ───────────────────────────────────────────────
-    businesses = []
+    initial_businesses = []
     for place in raw_results:
+        # Step 2: Basic programmatic filter to weed out obvious chains if show_all is false
         if not show_all and not is_small_business(place):
             continue
 
@@ -122,6 +193,7 @@ def search():
             "laundry": "Laundry", "locksmith": "Locksmith",
             "painter": "Painter", "plumber": "Plumber",
             "electrician": "Electrician", "car_repair": "Auto Repair",
+            "doctor": "Doctor", "hospital": "Hospital", "health": "Health/Medical",
         }
         types = place.get("types", [])
         category = next(
@@ -139,8 +211,8 @@ def search():
             if photo_ref else None
         )
 
-        businesses.append({
-            "id":            place.get("place_id"),  # used by frontend for selection/keying
+        initial_businesses.append({
+            "id":            place.get("place_id"),
             "name":          place.get("name"),
             "address":       place.get("vicinity"),
             "category":      category,
@@ -154,10 +226,24 @@ def search():
             "photo_ref":     photo_ref,
             "photo_url":     photo_url,
             "maps_url":      f"https://www.google.com/maps/place/?q=place_id:{place.get('place_id')}",
+            "ai_reason":     "" # Default mapping
         })
+
+    # Step 3: Run AI secondary filtering
+    businesses = initial_businesses
+    if not show_all and initial_businesses:
+        gemini_decisions = filter_small_businesses_gemini(query, initial_businesses)
+        if gemini_decisions is not None:
+            # Re-filter businesses based on Gemini returned place_ids
+            businesses = []
+            for b in initial_businesses:
+                if b["id"] in gemini_decisions:
+                    b["ai_reason"] = gemini_decisions[b["id"]]
+                    businesses.append(b)
 
     return jsonify({
         "query":        query,
+        "search_keyword": search_keyword,
         "location":     {"lat": lat, "lng": lng},
         "radius_m":     radius,
         "total_found":  len(businesses),

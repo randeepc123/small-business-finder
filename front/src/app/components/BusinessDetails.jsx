@@ -1,4 +1,4 @@
-import { MapPin, Phone, Clock, Star, X, Globe } from 'lucide-react';
+import { MapPin, Phone, Clock, Star, X, Globe, Sparkles } from 'lucide-react';
 import { Button } from './ui/button';
 
 export function BusinessDetails({ business, onClose }) {
@@ -21,9 +21,9 @@ export function BusinessDetails({ business, onClose }) {
           ) : (
             <div className="flex flex-col items-center text-gray-300 gap-2">
               <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <rect x="3" y="3" width="18" height="18" rx="2" strokeWidth="1.5"/>
-                <circle cx="8.5" cy="8.5" r="1.5" strokeWidth="1.5"/>
-                <path d="M21 15l-5-5L5 21" strokeWidth="1.5"/>
+                <rect x="3" y="3" width="18" height="18" rx="2" strokeWidth="1.5" />
+                <circle cx="8.5" cy="8.5" r="1.5" strokeWidth="1.5" />
+                <path d="M21 15l-5-5L5 21" strokeWidth="1.5" />
               </svg>
               <span className="text-sm">No photo available</span>
             </div>
@@ -59,6 +59,18 @@ export function BusinessDetails({ business, onClose }) {
           {/* Description */}
           {business.description && (
             <p className="text-gray-700 mb-6">{business.description}</p>
+          )}
+
+          {business.ai_reason && (
+            <div className="mb-6 px-4 py-3 bg-purple-50 border border-purple-100 rounded-md flex items-start gap-3">
+              <Sparkles className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
+              <div>
+                <h3 className="font-medium text-purple-900 mb-1">Why we recommend this</h3>
+                <p className="text-sm text-purple-800 italic leading-snug">
+                  "{business.ai_reason}"
+                </p>
+              </div>
+            </div>
           )}
 
           {/* Detail rows */}
