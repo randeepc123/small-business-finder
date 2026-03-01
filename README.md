@@ -6,9 +6,9 @@
 docker compose up --build
 ```
 
-Then open **http://localhost** in your browser.
+Then open **http://localhost:5173** in your browser.
 
-The backend API runs on **http://localhost:5001**.
+The backend API runs on **http://127.0.0.1:5001**.
 
 ---
 
@@ -16,8 +16,8 @@ The backend API runs on **http://localhost:5001**.
 
 | Service | URL | Description |
 |---------|-----|-------------|
-| Frontend | http://localhost | React app served by nginx |
-| Backend | http://localhost:5001 | Flask API with Gemini AI |
+| Frontend | http://localhost:5173 | React app served by nginx |
+| Backend | http://127.0.0.1:5001 | Flask API with Gemini AI |
 
 ---
 
