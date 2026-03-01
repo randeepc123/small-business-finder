@@ -3,7 +3,6 @@ from flask_cors import CORS
 import requests
 import os
 import json
-import re
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -11,86 +10,12 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "AIzaSyBaFcA1aMshX-NaWsyT7T1CCpQqLiBWxZw")
+
+
+# The user provided a specific API key for Gemini
 GEMINI_API_KEY = "AIzaSyDP_uh7oU3P0kak2TwQa6jdz55L7rAUUpk"
 
-def get_keywords_from_gemini(user_query: str) -> str:
-    prompt = (
-        "You help people find local small businesses and interesting places to visit.\n\n"
-        f"The user said: '{user_query}'\n\n"
-        "Your job: Figure out what type of LOCAL PLACE or SMALL BUSINESS best satisfies their need or mood.\n"
-        "Think about the USER'S INTENT and EMOTION, not just the literal words.\n\n"
-        "Examples:\n"
-        '- "i am sick" -> "urgent care clinic"\n'
-        '- "im bored" -> "museum"\n'
-        '- "i want to have fun" -> "entertainment venue"\n'
-        '- "i need to eat" -> "local restaurant"\n'
-        '- "im stressed" -> "spa"\n'
-        '- "my car is broken" -> "auto repair shop"\n'
-        '- "i want to learn something" -> "museum"\n'
-        '- "im hungry" -> "local restaurant"\n'
-        '- "i want coffee" -> "coffee shop"\n'
-        '- "i need a haircut" -> "hair salon"\n'
-        '- "i want to work out" -> "gym"\n'
-        '- "i need groceries" -> "grocery store"\n'
-        '- "i want to buy clothes" -> "clothing boutique"\n'
-        '- "i need a dentist" -> "dentist"\n'
-        '- "i want fresh air" -> "park"\n'
-        '- "i want to celebrate" -> "restaurant"\n\n'
-        "Rules:\n"
-        "1. Focus on the USER'S UNDERLYING NEED, not the literal words.\n"
-        "2. Output ONLY a single SHORT keyword phrase (2-4 words max).\n"
-        "3. No quotes, no explanation, no punctuation - just the keyword.\n"
-    )
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={GEMINI_API_KEY}"
-    payload = {"contents": [{"parts": [{"text": prompt}]}]}
-    try:
-        resp = requests.post(url, json=payload, timeout=10)
-        if resp.status_code == 200:
-            return resp.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
-    except Exception as e:
-        print("Gemini Keyword error:", e, flush=True)
-    return user_query
-
-def filter_small_businesses_gemini(user_query: str, places: list) -> dict:
-    if not places: return {}
-    places_info = []
-    for p in places:
-        name = p.get('name', '')
-        place_id = p.get('id', '')
-        cat = p.get('category', '')
-        places_info.append(f"ID:{place_id} | Name:{name} | Category:{cat}")
-    
-    places_text = "\n".join(places_info)
-    prompt = f"""
-The user searched for: '{user_query}'
-Based on their need, here are the nearby places found:
-{places_text}
-
-Task:
-1. Thoroughly evaluate each place against the user's semantic intent. (e.g., if they are sick, they need medical attention, NOT a place with "sick" in the name).
-2. Filter out ANY big chain, state/nationwide companies, or large corporate franchises.
-3. Select ONLY the highly relevant, helpful local small businesses that genuinely solve the user's implicit problem based on their query.
-4. Provide a brief (1 sentence) specific AI reason for WHY this business is recommended based on their query and how it solves their problem.
-
-Return a JSON array of objects, where each object has "place_id" and "ai_reason". Output valid JSON only, no markdown blocks.
-"""
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={GEMINI_API_KEY}"
-    payload = {"contents": [{"parts": [{"text": prompt}]}]}
-    try:
-        resp = requests.post(url, json=payload, timeout=15)
-        if resp.status_code == 200:
-            text = resp.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
-            # robust json extraction
-            match = re.search(r'\[.*\]', text, re.DOTALL)
-            if match:
-                parsed = json.loads(match.group(0))
-                return {item.get("place_id"): item.get("ai_reason", "") for item in parsed if isinstance(item, dict)}
-            else:
-                return {}
-    except Exception as e:
-        print("Gemini error:", e, flush=True)
-    return None
 
 # ── Chain blocklist ──────────────────────────────────────────────────────────
 CHAIN_BLOCKLIST = [
@@ -153,11 +78,59 @@ def search():
     if not GOOGLE_API_KEY:
         return jsonify({"error": "Google API key not configured on server"}), 500
 
+    # ── 1. Use Gemini to extract the best search keyword ────────────────────
+    prompt_keyword = (
+        "You help people find local small businesses and interesting places to visit.\n\n"
+        f"The user said: '{query}'\n\n"
+        "Your job: Figure out what type of LOCAL PLACE or SMALL BUSINESS best satisfies their need or mood.\n"
+        "Think about the USER'S INTENT and EMOTION, not just the literal words.\n\n"
+        "Examples:\n"
+        '- "i am sick" -> "urgent care clinic"\n'
+        '- "im bored" -> "museum"\n'
+        '- "i want to have fun" -> "entertainment venue"\n'
+        '- "i need to eat" -> "local restaurant"\n'
+        '- "im stressed" -> "spa"\n'
+        '- "my car is broken" -> "auto repair shop"\n'
+        '- "i want to learn something" -> "museum"\n'
+        '- "im hungry" -> "local restaurant"\n'
+        '- "i want coffee" -> "coffee shop"\n'
+        '- "i need a haircut" -> "hair salon"\n'
+        '- "i want to work out" -> "gym"\n'
+        '- "i need groceries" -> "grocery store"\n'
+        '- "i want to buy clothes" -> "clothing boutique"\n'
+        '- "i need a dentist" -> "dentist"\n'
+        '- "i want fresh air" -> "park"\n'
+        '- "i want to celebrate" -> "restaurant"\n'
+        '- "i want to read" -> "bookstore"\n'
+        '- "i want to meet people" -> "cafe"\n'
+        '- "im feeling down" -> "therapist"\n'
+        '- "i want to try something new" -> "art studio"\n\n'
+        "Rules:\n"
+        "1. Focus on the USER'S UNDERLYING NEED, not the literal words.\n"
+        "2. Output ONLY a single SHORT keyword phrase (2-4 words max).\n"
+        "3. No quotes, no explanation, no punctuation - just the keyword.\n"
+    )
+
+    try:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={GEMINI_API_KEY}"
+        payload = {
+            "contents": [{
+                "parts": [{"text": prompt_keyword}]
+            }]
+        }
+        res = requests.post(url, json=payload, timeout=10)
+        res.raise_for_status()
+        
+        # Parse standard Gemini API JSON response
+        resp_json = res.json()
+        search_keyword = resp_json["candidates"][0]["content"]["parts"][0]["text"].strip()
+    except Exception as e:
+        print(f"Gemini keyword extraction failed: {e}")
+        search_keyword = query # Fallback to original
+
+    print(f"User Query: '{query}' -> AI Keyword: '{search_keyword}'")
+
     # ── Call Google Places Nearby Search ────────────────────────────────────
-    # Step 1: Use Gemini to convert natural language query to Places keyword
-    search_keyword = get_keywords_from_gemini(query)
-    print(f"Original Query: '{query}' -> Gemini Keyword: '{search_keyword}'", flush=True)
-    
     places_url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
     params = {
         "keyword":  search_keyword,
@@ -184,9 +157,8 @@ def search():
     raw_results = data.get("results", [])
 
     # ── Filter + shape results ───────────────────────────────────────────────
-    initial_businesses = []
+    businesses = []
     for place in raw_results:
-        # Step 2: Basic programmatic filter to weed out obvious chains if show_all is false
         if not show_all and not is_small_business(place):
             continue
 
@@ -208,7 +180,8 @@ def search():
             "laundry": "Laundry", "locksmith": "Locksmith",
             "painter": "Painter", "plumber": "Plumber",
             "electrician": "Electrician", "car_repair": "Auto Repair",
-            "doctor": "Doctor", "hospital": "Hospital", "health": "Health/Medical",
+            "doctor": "Doctor", "health": "Health Clinic", "hospital": "Hospital",
+            "amusement_center": "Arcade/Amusement", "bowling_alley": "Bowling Alley"
         }
         types = place.get("types", [])
         category = next(
@@ -226,8 +199,8 @@ def search():
             if photo_ref else None
         )
 
-        initial_businesses.append({
-            "id":            place.get("place_id"),
+        businesses.append({
+            "id":            place.get("place_id"),  # used by frontend for selection/keying
             "name":          place.get("name"),
             "address":       place.get("vicinity"),
             "category":      category,
@@ -241,24 +214,90 @@ def search():
             "photo_ref":     photo_ref,
             "photo_url":     photo_url,
             "maps_url":      f"https://www.google.com/maps/place/?q=place_id:{place.get('place_id')}",
-            "ai_reason":     "" # Default mapping
         })
 
-    # Step 3: Run AI secondary filtering
-    businesses = initial_businesses
-    if not show_all and initial_businesses:
-        gemini_decisions = filter_small_businesses_gemini(query, initial_businesses)
-        if gemini_decisions is not None:
-            # Re-filter businesses based on Gemini returned place_ids
-            businesses = []
-            for b in initial_businesses:
-                if b["id"] in gemini_decisions:
-                    b["ai_reason"] = gemini_decisions[b["id"]]
-                    businesses.append(b)
+    # ── 3. Use Gemini to curate and score the final results ────────────────
+    # Send the raw business data to Gemini to get the best small business recommendations
+    if businesses and not show_all:
+        # Create a simplified list for the AI to read
+        business_names_list = []
+        for i, b in enumerate(businesses):
+            business_names_list.append(f"[{i}] {b['name']} ({b['category']}, {b['rating']} stars, {b['review_count']} reviews)")
+        
+        business_text = "\n".join(business_names_list)
+        
+        prompt_curate = f"""
+The user is looking for small businesses with this conversational need: "{query}"
+
+Here is a list of businesses returned by Google Maps:
+{business_text}
+
+Your task:
+1. Identify and REMOVE any massive national or state-wide chains, big box stores, or large corporate franchises. ONLY include true small businesses (mom and pop shops, startups, local chains).
+2. From the remaining true small businesses, select the top 1 to 5 places that best solve the user's specific need: "{query}".
+3. For each selected place, write a short, punchy 1-sentence explanation of why it's a good choice for them.
+
+Output strictly in JSON format as follows:
+{{
+  "recommended_indices": [0, 2, 5],
+  "reasons": {{
+    "0": "Reason why index 0 is great...",
+    "2": "Reason why index 2 is great...",
+    "5": "Reason why index 5 is great..."
+  }}
+}}
+"""
+        try:
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={GEMINI_API_KEY}"
+            payload = {
+                "contents": [{
+                    "parts": [{"text": prompt_curate}]
+                }]
+            }
+            res = requests.post(url, json=payload, timeout=10)
+            res.raise_for_status()
+            
+            resp_json = res.json()
+            resp_text = resp_json["candidates"][0]["content"]["parts"][0]["text"].strip()
+            
+            # Clean up markdown code blocks if the AI returned them
+            if resp_text.startswith("```json"):
+                resp_text = resp_text[7:]
+                if resp_text.endswith("```"):
+                    resp_text = resp_text[:-3]
+            elif resp_text.startswith("```"):
+                resp_text = resp_text[3:]
+                if resp_text.endswith("```"):
+                    resp_text = resp_text[:-3]
+            
+            resp_text = resp_text.strip()
+                
+            curated_data = json.loads(resp_text)
+            
+            # Re-build the businesses list with only the recommended items
+            final_businesses = []
+            for idx in curated_data.get("recommended_indices", []):
+                idx = int(idx)
+                if 0 <= idx < len(businesses):
+                    b = businesses[idx]
+                    b["ai_reason"] = curated_data.get("reasons", {}).get(str(idx), "Recommended for your need.")
+                    final_businesses.append(b)
+            
+            businesses = final_businesses
+        except Exception as e:
+            with open("gemini_debug.log", "a", encoding="utf-8") as f:
+                f.write(f"\n\n--- GEMINI ERROR: {e} ---\n")
+                if 'res' in locals() and hasattr(res, "text"):
+                    f.write(f"Raw Res:\n{res.text}\n")
+                f.write(f"Cleaned Res:\n{resp_text if 'resp_text' in locals() else 'None'}\n")
+            
+            print(f"Gemini curation failed or JSON was invalid: {e}")
+            # If AI filtering fails, fallback to the naive filter results, but limit to top 5
+            businesses = businesses[:5]
 
     return jsonify({
         "query":        query,
-        "search_keyword": search_keyword,
+        "ai_keyword":   search_keyword,
         "location":     {"lat": lat, "lng": lng},
         "radius_m":     radius,
         "total_found":  len(businesses),

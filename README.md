@@ -1,49 +1,48 @@
-# Small Business Finder
+# Small Business Finder — Docker Setup
 
-Small Business Finder is a full-stack web application that helps users discover local small businesses in their area based on a search query.
+## Run with one command
 
-Large chain businesses often dominate search results. This project focuses on highlighting smaller, independent businesses using the Google Places API and custom filtering logic.
+```bash
+docker compose up --build
+```
 
----
+Then open **http://localhost** in your browser.
 
-## Problem
-
-It can be difficult for small businesses to gain visibility online. Search platforms often prioritize large chains with high traffic and advertising budgets.
-
----
-
-## Solution
-
-This application:
-- Allows users to search by service or product (e.g., "coffee", "bookstore")
-- Uses location data to find nearby businesses
-- Filters results to prioritize smaller, local businesses
-- Displays business details such as name, rating, address, and photos
-- Incorporates AI to process user prompts and refine search results based on contextual needs and intent.
+The backend API runs on **http://localhost:5001**.
 
 ---
 
-## Tech Stack
+## What's running
 
-Frontend:
-- React
-- JavaScript
-
-Backend:
-- Python
-- Flask
-
-API:
-- Google Places API
+| Service | URL | Description |
+|---------|-----|-------------|
+| Frontend | http://localhost | React app served by nginx |
+| Backend | http://localhost:5001 | Flask API with Gemini AI |
 
 ---
 
-## How It Works
+## API Keys
 
-1. The user enters a search term.
-2. The frontend sends a request to the Flask backend.
-3. The backend queries the Google Places API.
-4. Results are filtered to reduce large chain businesses.
-5. The filtered results are returned to the frontend and displayed to the user.
+Keys are already embedded in the image as defaults.
+To use your own keys, create a `.env` file in this folder:
+
+```
+GOOGLE_API_KEY=AIzaSy...
+GEMINI_API_KEY=AIzaSy...
+```
+
+Then run `docker compose up --build` again.
 
 ---
+
+## Stop
+
+```bash
+docker compose down
+```
+
+## Rebuild after code changes
+
+```bash
+docker compose up --build
+```

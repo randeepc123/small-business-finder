@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  # ── Flask API Backend ────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: .                 # Q5/small-business-finder/
+      dockerfile: Dockerfile
+    container_name: sbf-backend
+    ports:
+      - "5001:5001"
+    environment:
+      # Override these with your own keys if needed
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY:-AIzaSyBaFcA1aMshX-NaWsyT7T1CCpQqLiBWxZw}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-AIzaSyDP_uh7oU3P0kak2TwQa6jdz55L7rAUUpk}
+    restart: unless-stopped
+
+  # ── React Frontend ───────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./front            # Q5/small-business-finder/front/
+      dockerfile: Dockerfile
+    container_name: sbf-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
