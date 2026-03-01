@@ -105,9 +105,45 @@ def search():
             continue
 
         loc = place.get("geometry", {}).get("location", {})
+
+        # Extract human-readable category from Google's types list
+        # Map common Google types to friendly display names
+        type_map = {
+            "cafe": "Coffee Shop", "restaurant": "Restaurant", "bar": "Bar",
+            "bakery": "Bakery", "book_store": "Bookshop", "clothing_store": "Clothing",
+            "shoe_store": "Shoe Store", "jewelry_store": "Jewelry",
+            "hardware_store": "Hardware Store", "home_goods_store": "Home Goods",
+            "florist": "Florist", "grocery_or_supermarket": "Grocery",
+            "hair_care": "Hair Salon", "beauty_salon": "Beauty Salon",
+            "spa": "Spa", "gym": "Gym", "bicycle_store": "Bike Shop",
+            "pet_store": "Pet Store", "pharmacy": "Pharmacy",
+            "electronics_store": "Electronics", "furniture_store": "Furniture",
+            "art_gallery": "Art Gallery", "museum": "Museum",
+            "laundry": "Laundry", "locksmith": "Locksmith",
+            "painter": "Painter", "plumber": "Plumber",
+            "electrician": "Electrician", "car_repair": "Auto Repair",
+        }
+        types = place.get("types", [])
+        category = next(
+            (type_map[t] for t in types if t in type_map),
+            types[0].replace("_", " ").title() if types else "Local Business"
+        )
+
+        # Build photo URL directly so frontend can use it as an <img src>
+        photo_ref = (
+            place["photos"][0]["photo_reference"]
+            if place.get("photos") else None
+        )
+        photo_url = (
+            f"http://localhost:5001/photo?ref={photo_ref}&width=600"
+            if photo_ref else None
+        )
+
         businesses.append({
+            "id":            place.get("place_id"),  # used by frontend for selection/keying
             "name":          place.get("name"),
             "address":       place.get("vicinity"),
+            "category":      category,
             "rating":        place.get("rating"),
             "review_count":  place.get("user_ratings_total"),
             "price_level":   place.get("price_level"),
@@ -115,13 +151,9 @@ def search():
             "place_id":      place.get("place_id"),
             "lat":           loc.get("lat"),
             "lng":           loc.get("lng"),
-            "photo_ref":     (
-                place["photos"][0]["photo_reference"]
-                if place.get("photos") else None
-            ),
-            "maps_url": (
-                f"https://www.google.com/maps/place/?q=place_id:{place.get('place_id')}"
-            ),
+            "photo_ref":     photo_ref,
+            "photo_url":     photo_url,
+            "maps_url":      f"https://www.google.com/maps/place/?q=place_id:{place.get('place_id')}",
         })
 
     return jsonify({
@@ -181,7 +213,7 @@ def details():
         "fields": (
             "name,formatted_address,formatted_phone_number,"
             "website,opening_hours,rating,user_ratings_total,"
-            "price_level,reviews,url"
+            "price_level,reviews,url,editorial_summary,photos"
         ),
         "key": GOOGLE_API_KEY,
     }
@@ -193,9 +225,25 @@ def details():
         return jsonify({"error": f"Google Places request failed: {str(e)}"}), 502
 
     result = resp.json().get("result", {})
-    return jsonify(result)
+
+    # Extract description from editorial_summary if available
+    description = result.get("editorial_summary", {}).get("overview", None)
+
+    # Build photo URL from first photo if available
+    photos = result.get("photos", [])
+    photo_url = None
+    if photos:
+        ref = photos[0].get("photo_reference")
+        if ref:
+            photo_url = f"http://localhost:5001/photo?ref={ref}&width=600"
+
+    return jsonify({
+        **result,
+        "description": description,
+        "photo_url":   photo_url,
+    })
 
 
 # ── Entry point ──────────────────────────────────────────────────────────────
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5001)
