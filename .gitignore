@@ -7,3 +7,4 @@ gemini_debug.log
 test_backend.py
 test_gemini.py
 test_keys.py
+src/app/components/data/businesses.js

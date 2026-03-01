@@ -114,44 +114,36 @@ export default function App() {
 
   return (
     <div className="h-screen flex flex-col bg-slate-50 relative overflow-hidden">
-      {/* Decorative gradient background blur */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-200/50 rounded-full blur-[100px] pointer-events-none z-0" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-200/50 rounded-full blur-[100px] pointer-events-none z-0" />
 
       {/* Header */}
-      <header className="bg-gradient-to-r from-blue-700 via-indigo-600 to-purple-700 text-white shadow-lg border-b z-10">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex items-center justify-between mb-5">
-            <h1 className="text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-blue-100 flex items-center gap-2">
-              <Sparkles className="w-6 h-6 text-yellow-300" />
-              Local Business Finder
-            </h1>
-            <span className="text-xs bg-black/20 px-3 py-1.5 rounded-full backdrop-blur-sm text-blue-50 border border-white/10 font-medium">
-              {locationStatus}
-            </span>
+      <header className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between mb-4">
+            <div className='flex-row'>
+              <img src="public/logo.png" alt="" srcset="" className='w-15 inline-block'/>
+              <h1 className="text-2xl font-semibold inline-block align-middle">Shop Local</h1>
+            </div>
+            <span className="text-xs text-gray-400">{locationStatus}</span>
           </div>
 
           <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
             <div className="flex flex-col sm:flex-row gap-3 flex-1 w-full">
               {/* Search */}
               <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-4 h-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 cursor-pointer" onClick={handleSearch} disabled={loading || !searchQuery.trim()}/>
                 <Input
-                  placeholder="I'm feeling sick..."
+                  placeholder="I want pizzas..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-blue-100 placeholder:opacity-70 focus:bg-white focus:text-gray-900 transition-all rounded-full px-4 h-11"
+                  className="pl-10"
                 />
               </div>
 
-              <Button
-                onClick={handleSearch}
-                disabled={loading || !searchQuery.trim()}
-                className="bg-white text-indigo-700 hover:bg-blue-50 rounded-full px-6 font-semibold shadow-sm h-11 transition-all"
-              >
+              <Button onClick={handleSearch} disabled={loading || !searchQuery.trim()}>
                 {loading ? 'Searching...' : 'Search'}
               </Button>
+
 
               {/* Category Filter — only shown once results are loaded */}
               {businesses.length > 0 && (
@@ -171,30 +163,29 @@ export default function App() {
             </div>
 
             {/* View Mode Toggle */}
-            <div className="flex bg-white/10 p-1 rounded-full backdrop-blur-sm border border-white/10">
+            <div className="flex gap-2">
               <Button
-                variant={viewMode === 'map' ? 'default' : 'ghost'}
+                variant={viewMode === 'map' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setViewMode('map')}
-                className={`gap-2 rounded-full px-4 ${viewMode === 'map' ? 'bg-white text-indigo-700 hover:bg-white shadow-sm' : 'text-blue-50 hover:bg-white/20 hover:text-white'}`}
+                className="gap-2"
               >
                 <MapIcon className="w-4 h-4" />
                 <span className="hidden sm:inline">Map</span>
               </Button>
               <Button
-                variant={viewMode === 'split' ? 'default' : 'ghost'}
+                variant={viewMode === 'split' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setViewMode('split')}
-                className={`rounded-full px-4 ${viewMode === 'split' ? 'bg-white text-indigo-700 hover:bg-white shadow-sm' : 'text-blue-50 hover:bg-white/20 hover:text-white'}`}
               >
                 <span className="hidden sm:inline">Both</span>
                 <span className="sm:hidden">Split</span>
               </Button>
               <Button
-                variant={viewMode === 'list' ? 'default' : 'ghost'}
+                variant={viewMode === 'list' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setViewMode('list')}
-                className={`gap-2 rounded-full px-4 ${viewMode === 'list' ? 'bg-white text-indigo-700 hover:bg-white shadow-sm' : 'text-blue-50 hover:bg-white/20 hover:text-white'}`}
+                className="gap-2"
               >
                 <List className="w-4 h-4" />
                 <span className="hidden sm:inline">List</span>
@@ -204,8 +195,8 @@ export default function App() {
 
           {/* Radius Slider */}
           <div className="mt-4 flex items-center gap-4">
-            <span className="text-blue-100 text-xs font-medium whitespace-nowrap">
-              📍 Radius: <span className="text-white font-bold">{radius >= 1000 ? `${(radius / 1000).toFixed(1)} km` : `${radius} m`}</span>
+            <span className="text-black-100 text-s font-extrabold whitespace-nowrap">
+              📍 Radius: <span className="text-black font-bold">{radius >= 1000 ? `${(radius / 1000).toFixed(1)} km` : `${radius} m`}</span>
             </span>
             <input
               type="range"
@@ -214,20 +205,19 @@ export default function App() {
               step="500"
               value={radius}
               onChange={(e) => setRadius(Number(e.target.value))}
-              className="flex-1 h-1.5 rounded-full accent-yellow-300 cursor-pointer"
+              className="flex-1 h-1.5 rounded-full cursor-pointer"
             />
             <span className="text-blue-200 text-xs whitespace-nowrap">500 m — 25 km</span>
           </div>
 
           {businesses.length > 0 && (
-            <div className="flex items-center gap-2 mt-4 text-blue-100 text-sm font-medium">
-              <Sparkles className="w-4 h-4" />
-              <p>Top {filteredBusinesses.length} recommended independent business{filteredBusinesses.length !== 1 ? 'es' : ''} for you</p>
-            </div>
+            <p className="text-sm text-gray-600 mt-3">
+              Found {filteredBusinesses.length} business{filteredBusinesses.length !== 1 ? 'es' : ''}
+            </p>
           )}
 
           {error && (
-            <p className="text-sm bg-red-500/20 text-red-100 px-3 py-2 rounded-lg mt-4 inline-block border border-red-500/30 font-medium">⚠ {error}</p>
+            <p className="text-sm text-red-500 mt-3">⚠ {error}</p>
           )}
         </div>
       </header>
@@ -248,8 +238,8 @@ export default function App() {
           )}
 
           {loading && (
-            <div className="flex flex-col items-center justify-center h-full text-indigo-600 gap-4 animate-in fade-in">
-              <div className="w-12 h-12 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin shadow-lg shadow-indigo-200" />
+            <div className="flex flex-col items-center justify-center h-full text-black gap-4 animate-in fade-in">
+              <div className="w-12 h-12 border-4 border-blue-100 border-t-black rounded-full animate-spin shadow-lg shadow-black-200" />
               <p className="font-medium text-lg">AI is analyzing nearby businesses...</p>
             </div>
           )}
